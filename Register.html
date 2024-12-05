@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="style_register.css">
+    <title>Document</title>
+</head>
+<body>
+   
+    
+    <div class="wrapper">
+        <div class="logo">
+            <a href="index.html"><img src="image/GamesHeavenn.png"></a>
+        </div>
+        <form action="Signup.php" method="post">
+            <h1>Register</h1>
+            <h5>Kindly fill the form to register</h5>
+            <div class="input-box">
+                <input id="Username" type="text" placeholder="Username" name="Username" required>
+                <i class="fa-solid fa-user" ></i>
+            </div>
+            <div class="input-box">
+                <input id="Email" type="email" placeholder="Email" name="Email" required>
+                <i class="fa-regular fa-envelope"></i>            </div>
+            <div class="input-box">
+                <input id="password" type="password" placeholder="password" name="Password" required>
+                <i class="fa-solid fa-lock fa-1"></i>
+            </div>
+            <div class="input-box">
+                <input id="ConfirmPassword" type="password" placeholder="Confirm password" required>
+                <i class="fa-solid fa-lock fa-1"></i>
+            </div>
+
+            <div class="remember-forgot">
+                <label><input type="checkbox">Remember me</label>
+            </div>
+            <div id="email-error" class="error-message" style="display: block;"></div>
+            <button id="btn" type="submit" class="btn">Sign up</button>
+            <div class="register-link">
+                <p>Do you have an account? <a href="login.html">Login</a></p>
+            </div>
+        </form>
+    </div>
+</body>
+<script>
+    const emailInput = document.querySelector('input[name="Email"]');
+        const emailErrorContainer = document.getElementById('email-error');
+    
+        function hideEmailError() {
+            emailErrorContainer.style.display = 'none';
+        }
+    
+        emailInput.addEventListener('input', hideEmailError);
+    
+        emailInput.addEventListener('blur', function() {
+            const emailInputValue = this.value;
+    
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailPattern.test(emailInputValue)) {
+                fetch(`signup.php?check_email=${encodeURIComponent(emailInputValue)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.exists) {
+                            emailErrorContainer.innerText = "Email is already taken.";
+                            emailErrorContainer.style.display = 'block'; 
+                        } else {
+                            hideEmailError(); 
+                        }
+                    });
+            } else {
+                emailErrorContainer.innerText = "Invalid email address.";
+                emailErrorContainer.style.display = 'block'; 
+            }
+        });
+    
+</script>
+</html>

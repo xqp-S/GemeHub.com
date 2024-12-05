@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="style_login.css">
+    <link rel="website icon" href="image/GamesHeavenn.png">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div class="wrapper">
+        <div class="logo">
+        <a href="index.html"><img src="image/GamesHeavenn.png"></a>
+    </div>
+        <form action="Signin.php" method="post">
+            <h1>Login</h1>
+            <div class="input-box">
+                <input type="text" placeholder="Username" id="Username" name="Username" required>
+                <i class="fa-solid fa-user" ></i>
+            </div>
+            <div class="input-box">
+                <input type="password" placeholder="password" id="password" name="Password" required>
+                <i class="fa-solid fa-lock fa-1"></i>
+            </div>
+            <div class="remember-forgot">
+                <label><input type="checkbox">Remember me</label>
+                <a href="#" class="Forgot">Forgot password?</a>
+            </div>
+            <div id="User-error" class="error-message" style="display: block;"></div>
+            <div id="error-message" class="error-message"></div>
+            <button  id="btn" type="submit" class="btn">Login</button>
+            <div class="register-link">
+                <p>Don't have an account? <a href="Register.html">Register</a></p>
+            </div>
+        </form>
+    </div>
+    
+</body>
+<script>
+   document.addEventListener("DOMContentLoaded", function () {
+    const UserInput = document.querySelector('Username');
+    const PasswordInput = document.querySelector('Password');
+    const UserErrorContainer = document.getElementById('User-error');
+    const ErrorMessageContainer = document.getElementById('error-message');
+    const form = document.querySelector('form');
+
+    /**
+     * Function to hide the username error message.
+     */
+    function hideUserError() {
+        UserErrorContainer.style.display = 'none';
+        UserErrorContainer.innerText = '';
+    }
+
+    /**
+     * Event Listener: Clear username error on input.
+     */
+    UserInput.addEventListener('input', hideUserError);
+
+    /**
+     * Validate the username by making an AJAX request to `Signin.php` 
+     * to check if the username exists in the database.
+     */
+    UserInput.addEventListener('blur', function () {
+        const usernameValue = UserInput.value.trim();
+        
+        if (usernameValue.length > 0) {
+            fetch(`Signin.php?check_username=${encodeURIComponent(usernameValue)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.exists) {
+                        UserErrorContainer.innerText = "No user found with this Username.";
+                        UserErrorContainer.style.display = 'block';
+                    } else {
+                        hideUserError();
+                    }
+                })
+                .catch(error => {
+                    console.error("Error validating username:", error);
+                    UserErrorContainer.innerText = "Error checking username. Please try again.";
+                    UserErrorContainer.style.display = 'block';
+                });
+        }
+    });
+
+    
+
+    /**
+     * Handle URL parameters for displaying error messages (e.g., invalid login or no user).
+     */
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+    
+
+    if (error) {
+        if (error === 'invalid_login') {
+            ErrorMessageContainer.innerText = "Invalid username or password.";
+        } else if (error === 'no_user') {
+            ErrorMessageContainer.innerText = "No user found with this Username.";
+        }
+        ErrorMessageContainer.style.display = 'block';
+    }
+
+    /**
+     * Form submit validation (Optional).
+     * Prevent form submission if errors exist.
+     */
+    form.addEventListener('submit', function (event) {
+        if (UserErrorContainer.style.display === 'block' || ErrorMessageContainer.style.display === 'block') {
+            event.preventDefault(); // Prevent form submission
+            alert("Please fix the errors before submitting the form.");
+        }
+    });
+});
+
+</script>
+
+</html>
